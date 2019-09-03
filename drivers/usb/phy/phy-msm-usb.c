@@ -1,5 +1,5 @@
 /* Copyright (c) 2009-2018, Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -294,6 +294,7 @@ static u32 bus_freqs[USB_NOC_NUM_VOTE][USB_NUM_BUS_CLOCKS]  /*bimc,snoc,pcnoc*/;
 static char bus_clkname[USB_NUM_BUS_CLOCKS][20] = {"bimc_clk", "snoc_clk",
 						"pcnoc_clk"};
 static bool bus_clk_rate_set;
+static void msm_chg_block_on(struct msm_otg *motg);
 
 static void dbg_inc(unsigned int *idx)
 {
@@ -977,6 +978,12 @@ static int msm_otg_reset(struct usb_phy *phy)
 	 * Disable USB BAM as block reset resets USB BAM registers.
 	 */
 	msm_usb_bam_enable(CI_CTRL, false);
+
+	if (motg->phy.otg->state == OTG_STATE_UNDEFINED &&
+			motg->rm_pulldown) {
+		msm_otg_dbg_log_event(&motg->phy, "PHY NON DRIVE", 0, 0);
+		msm_chg_block_on(motg);
+	}
 
 	return 0;
 }
@@ -2235,10 +2242,10 @@ static void msm_otg_start_peripheral(struct usb_otg *otg, int on)
 		/* bump up usb core_clk to default */
 		clk_set_rate(motg->core_clk, motg->core_clk_rate);
 
-		 msm_chg_block_on(motg);
 		 if (get_psy_type(motg) == POWER_SUPPLY_TYPE_USB_CDP) {
 			 pr_err("xbt %s usb_gadget_connect, chg_type=%d\n", __func__, get_psy_type(motg));
 
+			 msm_chg_block_on(motg);
 			 usb_gadget_connect(otg->gadget);
 		 }
 		usb_gadget_vbus_connect(otg->gadget);
@@ -2499,6 +2506,29 @@ static void msm_chg_block_off(struct msm_otg *motg)
 	func_ctrl &= ~ULPI_FUNC_CTRL_OPMODE_MASK;
 	func_ctrl |= ULPI_FUNC_CTRL_OPMODE_NORMAL;
 	ulpi_write(phy, func_ctrl, ULPI_FUNC_CTRL);
+}
+
+static void msm_otg_set_mode_nondriving(struct msm_otg *motg,
+					bool mode_nondriving)
+{
+	clk_prepare_enable(motg->xo_clk);
+	clk_prepare_enable(motg->phy_csr_clk);
+	clk_prepare_enable(motg->core_clk);
+	clk_prepare_enable(motg->pclk);
+
+	msm_otg_exit_phy_retention(motg);
+
+	if (mode_nondriving)
+		msm_chg_block_on(motg);
+	else
+		msm_chg_block_off(motg);
+
+	msm_otg_enter_phy_retention(motg);
+
+	clk_disable_unprepare(motg->pclk);
+	clk_disable_unprepare(motg->core_clk);
+	clk_disable_unprepare(motg->phy_csr_clk);
+	clk_disable_unprepare(motg->xo_clk);
 }
 
 #define MSM_CHG_DCD_TIMEOUT		(750 * HZ/1000) /* 750 msec */
@@ -3368,6 +3398,7 @@ static int msm_otg_dpdm_regulator_enable(struct regulator_dev *rdev)
 					motg->rm_pulldown, 0);
 		}
 	}
+	msm_otg_set_mode_nondriving(motg, true);
 
 	return ret;
 }
@@ -3385,6 +3416,7 @@ static int msm_otg_dpdm_regulator_disable(struct regulator_dev *rdev)
 					motg->rm_pulldown, 0);
 		}
 	}
+	msm_otg_set_mode_nondriving(motg, false);
 
 	return ret;
 }
@@ -3444,13 +3476,10 @@ static int msm_otg_debugfs_init(struct msm_otg *motg)
 {
 	struct dentry *msm_otg_dentry;
 
-
 	msm_otg_dbg_root = debugfs_create_dir("msm_otg", NULL);
 
 	if (!msm_otg_dbg_root || IS_ERR(msm_otg_dbg_root))
 		return -ENODEV;
-
-
 
 
 		msm_otg_dentry = debugfs_create_file("mode", 0644,
@@ -3461,7 +3490,6 @@ static int msm_otg_debugfs_init(struct msm_otg *motg)
 			msm_otg_dbg_root = NULL;
 			return -ENODEV;
 		}
-
 
 	msm_otg_dentry = debugfs_create_file("bus_voting", 0644,
 			msm_otg_dbg_root, motg, &msm_otg_bus_fops);
