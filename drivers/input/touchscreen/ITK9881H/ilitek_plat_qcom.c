@@ -337,14 +337,6 @@ static int ilitek_plat_notifier_fb(struct notifier_block *self, unsigned long ev
 
 	ipio_debug("Notifier's event = %ld\n", event);
 
-#ifdef FACTORY_VERSION_ENABLE
-		if (strnstr(saved_command_line, "androidboot.mode=ffbm-01", strlen(saved_command_line)) && event == FB_EVENT_SUSPEND) {
-			ipio_info("We are in ffbm-01 mode!\n");
-			ilitek_tddi_sleep_handler(TP_DEEP_SLEEP);
-			return NOTIFY_OK;
-		}
-#endif
-
 	/*
 	 *	FB_EVENT_BLANK(0x09): A hardware display blank change occurred.
 	 *	FB_EARLY_EVENT_BLANK(0x10): A hardware display blank early change occurred.

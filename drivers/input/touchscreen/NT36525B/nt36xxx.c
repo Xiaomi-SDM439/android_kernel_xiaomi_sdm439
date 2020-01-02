@@ -2247,18 +2247,6 @@ static int nvt_fb_notifier_callback(struct notifier_block *self, unsigned long e
 
 	NVT_LOG("Enter %s", __func__);
 
-#ifdef FACTORY_VERSION_ENABLE
-	if (strnstr(saved_command_line, "androidboot.mode=ffbm-01", strlen(saved_command_line))) {
-		if (evdata && event == FB_EVENT_SUSPEND) {
-			NVT_LOG("We are in ffbm-01 mode,event=%lu\n", event);
-			nvt_ts_suspend(&ts->client->dev);
-		} else if (evdata && event == FB_EVENT_RESUME) {
-			NVT_LOG("We are in ffbm-01 mode,event=%lu\n", event);
-			nvt_ts_resume(&ts->client->dev);
-		}
-		return 0;
-	}
-#endif
 
 	if (evdata && evdata->data && event == FB_EARLY_EVENT_BLANK) {
 		blank = evdata->data;

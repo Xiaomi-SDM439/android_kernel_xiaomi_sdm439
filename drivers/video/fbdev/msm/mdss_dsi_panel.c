@@ -45,11 +45,7 @@ extern void ilitek_call_resume_work(void);
 
 struct mdss_dsi_ctrl_pdata *change_par_ctrl;
 int change_par_buf;
-#ifdef FACTORY_VERSION_ENABLE
-	int LCM_effect[3] = {0x2, 0xf0, 0x100};
-#else
-	int LCM_effect[3] = {0x2, 0xf0, 0x400};
-#endif
+int LCM_effect[3] = {0x2, 0xf0, 0x400};
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
 
@@ -1021,9 +1017,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	PM6_cmds_point = &change_par_ctrl->PM6_cmds;
 	PM7_cmds_point = &change_par_ctrl->PM7_cmds;
 	PM8_cmds_point = &change_par_ctrl->PM8_cmds;
-#ifdef FACTORY_VERSION_ENABLE
 	LCM_effect[2] = 0x100;
-#endif
 
 	if (change_par_ctrl == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
@@ -2967,11 +2961,7 @@ static int mdss_panel_parse_dt(struct device_node *np,
 		else if (!strcmp(data, "vflip"))
 			pinfo->panel_orientation = MDP_FLIP_UD;
 	}
-#ifdef FACTORY_VERSION_ENABLE
-	rc = of_property_read_u32(np, "qcom,mdss-brightness-max-level-factory", &tmp);
-#else
 	rc = of_property_read_u32(np, "qcom,mdss-brightness-max-level", &tmp);
-#endif
 	pinfo->brightness_max = (!rc ? tmp : MDSS_MAX_BL_BRIGHTNESS);
 	rc = of_property_read_u32(np, "qcom,mdss-dsi-bl-min-level", &tmp);
 	pinfo->bl_min = (!rc ? tmp : 0);
