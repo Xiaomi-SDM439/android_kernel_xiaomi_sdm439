@@ -1321,6 +1321,16 @@ config TOUCHSCREEN_ITK9881H
 
 	  If unsure, say N.
 
+config TOUCHSCREEN_NT36525B
+	bool "NT36525B Touchscreen"
+	default n
+	help
+	  Say Y here if you have NT36525B Touchscreen.
+
+	  If unsure, say N.
+
+source "drivers/input/touchscreen/NT36525B/Kconfig"
+
 config TOUCHSCREEN_FT8006S
 	bool "FT8006S Touchscreen"
 	default n
