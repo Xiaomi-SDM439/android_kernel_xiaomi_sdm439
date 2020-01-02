@@ -41,7 +41,7 @@
 #include "qg-battery-profile.h"
 #include "qg-defs.h"
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 #define SUNWODA_ID_MAX 82000
 #define SUNWODA_ID_MIN 73500
 #define NVT_ID_MAX 44000
@@ -1932,7 +1932,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			pr_info("%s:Terminated charging @ msoc=%d\n",
 					__func__, chip->msoc);
 		}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)
 #else
 	} else if ((!chip->charge_done || chip->msoc <= recharge_soc)
@@ -2518,7 +2518,7 @@ static int qg_load_battery_profile(struct qpnp_qg *chip)
 
 	pr_err("batt_id_ohm=%d\n", chip->batt_id_ohm);
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	if(chip->batt_id_ohm >= SUNWODA_ID_MIN && chip->batt_id_ohm <= SUNWODA_ID_MAX) {
 		match = 1;
 		chip->batt_id = 1;
