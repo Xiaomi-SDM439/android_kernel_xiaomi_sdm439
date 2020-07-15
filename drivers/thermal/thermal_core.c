@@ -2629,17 +2629,17 @@ static int thermal_pm_notify(struct notifier_block *nb,
 static struct notifier_block thermal_pm_nb = {
 	.notifier_call = thermal_pm_notify,
 };
-
-
+//add for thermal switch by dongkai start
+//#ifdef RAINBOW_FEATURE_THERMAL_SWITCH
 unsigned int sconfig;
 
 #define to_backlight_device(obj) container_of(obj, struct backlight_device, dev)
  static ssize_t sconfig_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
+	//int result;
 
-
-
-
+	//if (!tz->ops->get_mode)
+	//	return -EPERM;
 	pr_err("sconfig_show sconfig = %d\n", sconfig);
 
 	return snprintf(buf, SNPRINTF_MAXLEN, "%d\n", sconfig);
@@ -2652,7 +2652,7 @@ static ssize_t sconfig_store(struct device *dev,
 
 	int ret;
 
-
+	//kobject_uevent_env(&dev->kobj, KOBJ_CHANGE, NULL);
 	sysfs_notify(&dev->kobj, NULL, "sconfig");
 
 	ret = kstrtoint(buf, 0, &sconfig);
@@ -2678,7 +2678,7 @@ static struct device_attribute dev_attr_thermal_config = {
 void thermalsconfig_init(void)
 {
 	   static struct device *dev;
-
+	   //static dev_t thermalsconfig_device_no = NULL;
 	   int result;
 
 	   dev = device_create(&thermal_class, NULL, MKDEV(0, 0), NULL, "thermal_message");
@@ -2697,8 +2697,8 @@ void thermalsconfig_init(void)
 		   printk(KERN_ALERT"Failed to create attribute file.");
 	   }
 }
-
-
+//#endif
+//add for thermal switch by dongkai end
 static int __init thermal_init(void)
 {
 	int result;
@@ -2723,11 +2723,11 @@ static int __init thermal_init(void)
 	result = of_parse_thermal_zones();
 	if (result)
 		goto exit_zone_parse;
-
-
+    //add for thermal switch by xujia start
+    //#ifdef RAINBOW_FEATURE_THERMAL_SWITCH
     thermalsconfig_init();
-
-
+    //#endif
+    //add for thermal switch by xujia end
 	result = register_pm_notifier(&thermal_pm_nb);
 	if (result)
 		pr_warn("Thermal: Can not register suspend notifier, return %d\n",
