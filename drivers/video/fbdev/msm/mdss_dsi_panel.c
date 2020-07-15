@@ -1,5 +1,5 @@
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -33,9 +33,11 @@
 #include "mdss_debug.h"
 
 extern struct ktd3137_chip *bkl_chip;
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
 extern bool  is_ilitek_tp;
 extern void ilitek_call_resume_work(void);
+extern void lcd_call_tp_reset(int i);
+extern bool  is_focal_tp;
 #endif
 
 #define DT_CMD_HDR 6
@@ -377,7 +379,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 	struct mdss_panel_info *pinfo = NULL;
 	int i, rc = 0;
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
 	extern char *saved_command_line;
 	char *rf_panel_name = (char *)strnstr(saved_command_line, ":qcom,", strlen(saved_command_line));
 #endif
@@ -470,7 +472,31 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 					goto exit;
 				}
 			}
-
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
+			if (is_focal_tp) {
+				lcd_call_tp_reset(0);
+				gpio_set_value((ctrl_pdata->rst_gpio), pdata->panel_info.rst_seq[0]);
+				if (pdata->panel_info.rst_seq[1])
+					usleep_range((pinfo->rst_seq[1] * 1000), (pinfo->rst_seq[1] * 1000) + 10);
+				gpio_set_value((ctrl_pdata->rst_gpio), pdata->panel_info.rst_seq[2]);
+				if (pdata->panel_info.rst_seq[3])
+					usleep_range((pinfo->rst_seq[3] * 1000 - 5000), (pinfo->rst_seq[3] * 1000) + 10 - 5000);
+				lcd_call_tp_reset(1);
+				usleep_range(5000, 5010);
+				gpio_set_value((ctrl_pdata->rst_gpio), pdata->panel_info.rst_seq[4]);
+				if (pdata->panel_info.rst_seq[5])
+					usleep_range((pinfo->rst_seq[5] * 1000), (pinfo->rst_seq[5] * 1000) + 10);
+			}
+			if (!is_focal_tp) {
+				for (i = 0; i < pdata->panel_info.rst_seq_len; ++i) {
+					gpio_set_value((ctrl_pdata->rst_gpio),
+						pdata->panel_info.rst_seq[i]);
+					if (pdata->panel_info.rst_seq[++i])
+						usleep_range((pinfo->rst_seq[i] * 1000),
+						(pinfo->rst_seq[i] * 1000) + 10);
+				}
+			}
+#else
 			for (i = 0; i < pdata->panel_info.rst_seq_len; ++i) {
 				gpio_set_value((ctrl_pdata->rst_gpio),
 					pdata->panel_info.rst_seq[i]);
@@ -478,8 +504,8 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 					usleep_range((pinfo->rst_seq[i] * 1000),
 					(pinfo->rst_seq[i] * 1000) + 10);
 			}
-
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#endif
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PPROJECT_OLIVELITE) || defined(CONFIG_PPROJECT_OLIVEWOOD)
 			rf_panel_name += strlen(":qcom,");
 			pr_info(" %s res=%d\n", rf_panel_name, strncmp(rf_panel_name, "mdss_dsi_nvt36525b_hdplus_video_c3i", strlen("mdss_dsi_nvt36525b_hdplus_video_c3i")));
 			if (!strncmp(rf_panel_name, "mdss_dsi_nvt36525b_hdplus_video_c3i", strlen("mdss_dsi_nvt36525b_hdplus_video_c3i"))) {
@@ -495,7 +521,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			}
 #endif
 
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PPROJECT_OLIVE) || defined(CONFIG_PPROJECT_OLIVELITE) || defined(CONFIG_PPROJECT_OLIVEWOOD)
 			if (is_ilitek_tp) {
 				pr_err("%s:  ILITEK  LCD Call TP Reset start! \n", __func__);
 				ilitek_call_resume_work();
@@ -1040,7 +1066,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	case 0x0006:
 		mdss_dsi_panel_cmds_send(change_par_ctrl, PM1_cmds_point,
 			CMD_REQ_COMMIT);
-		break;
+		break;  //Protect mode 1~8
 	case 0x0007:
 		mdss_dsi_panel_cmds_send(change_par_ctrl,
 			PM2_cmds_point, CMD_REQ_COMMIT);

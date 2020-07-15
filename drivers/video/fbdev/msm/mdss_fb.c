@@ -824,11 +824,11 @@ static ssize_t mdss_fb_change_dispparam(struct device *dev,
 	PM8_cmds_point = &change_par_ctrl->PM8_cmds;
 
 	if ((change_par_buf >= 0x01) && (change_par_buf <= 0x0c))
-		LCM_effect[0] = change_par_buf;
+		LCM_effect[0] = change_par_buf;  //gamma mode & PM mode
 	else if ((change_par_buf == 0x10) || (change_par_buf == 0xf0))
-		LCM_effect[1] = change_par_buf;
+		LCM_effect[1] = change_par_buf;  //CE mode
 	else if ((change_par_buf == 0x100) || (change_par_buf == 0x200) || (change_par_buf == 0x300) || (change_par_buf == 0x400))
-		LCM_effect[2] = change_par_buf;
+		LCM_effect[2] = change_par_buf;  //CABC mode
 
 	if (change_par_ctrl == NULL) {
 		pr_err("%s: Invalid input data\n", __func__);
