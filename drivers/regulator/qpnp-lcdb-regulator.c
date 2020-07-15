@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1308,9 +1308,10 @@ static int qpnp_lcdb_ldo_regulator_enable(struct regulator_dev *rdev)
 	return rc;
 }
 
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
 extern bool ilitek_gesture_flag;
 extern bool nvt_gesture_flag;
+extern bool fts_gesture_flag;
 #endif
 
 static int qpnp_lcdb_ldo_regulator_disable(struct regulator_dev *rdev)
@@ -1319,8 +1320,8 @@ static int qpnp_lcdb_ldo_regulator_disable(struct regulator_dev *rdev)
 	struct qpnp_lcdb *lcdb  = rdev_get_drvdata(rdev);
 
 	mutex_lock(&lcdb->lcdb_mutex);
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
-	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true))
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
+	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true))
 		rc = qpnp_lcdb_disable(lcdb);
 #else
 	rc = qpnp_lcdb_disable(lcdb);
@@ -1403,8 +1404,8 @@ static int qpnp_lcdb_ncp_regulator_disable(struct regulator_dev *rdev)
 	struct qpnp_lcdb *lcdb  = rdev_get_drvdata(rdev);
 
 	mutex_lock(&lcdb->lcdb_mutex);
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
-	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true))
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
+	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true))
 		rc = qpnp_lcdb_disable(lcdb);
 #else
 	rc = qpnp_lcdb_disable(lcdb);

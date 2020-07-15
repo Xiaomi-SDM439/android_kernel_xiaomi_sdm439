@@ -2,7 +2,7 @@
  * TI LM363X Regulator Driver
  *
  * Copyright 2016 Texas Instruments
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * Author: Milo Kim <milo.kim@ti.com>
  *
