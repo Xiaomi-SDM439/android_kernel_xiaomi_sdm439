@@ -1,5 +1,5 @@
 /* Copyright (c) 2015-2016, 2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1705,6 +1705,18 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
+	btn_low[0] = 92;
+	btn_high[0] = 92;
+	btn_low[1] = 266;
+	btn_high[1] = 266;
+	btn_low[2] = 488;
+	btn_high[2] = 488;
+	btn_low[3] = 488;
+	btn_high[3] = 488;
+	btn_low[4] = 488;
+	btn_high[4] = 488;
+#else
 	btn_low[0] = 89;
 	btn_high[0] = 89;
 	btn_low[1] = 288;
@@ -1715,6 +1727,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_high[3] = 555;
 	btn_low[4] = 488;
 	btn_high[4] = 555;
+#endif
 
 	return msm8952_wcd_cal;
 }
