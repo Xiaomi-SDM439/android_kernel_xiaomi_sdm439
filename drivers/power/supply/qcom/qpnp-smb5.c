@@ -1,5 +1,5 @@
 /* Copyright (c) 2018 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -2365,7 +2365,7 @@ static int smb5_init_hw(struct smb5 *chip)
 		}
 	}
 
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
 	rc = smblib_write(chg, USBIN_9V_AICL_THRESHOLD_REG, 0x5);
 	if (rc < 0) {
 		dev_err(chg->dev, "Couldn't configure USBIN_9V_AICL_THRESHOLD_REG rc=%d\n",

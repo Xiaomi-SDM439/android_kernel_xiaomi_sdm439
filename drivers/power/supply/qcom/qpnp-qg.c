@@ -1,5 +1,5 @@
 /* Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1932,7 +1932,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			pr_info("%s:Terminated charging @ msoc=%d\n",
 					__func__, chip->msoc);
 		}
-#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE)
+#if defined(CONFIG_PROJECT_OLIVE) || defined(CONFIG_PROJECT_OLIVELITE) || defined(CONFIG_PROJECT_OLIVEWOOD)
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)
 #else
 	} else if ((!chip->charge_done || chip->msoc <= recharge_soc)
@@ -2516,7 +2516,7 @@ static int qg_load_battery_profile(struct qpnp_qg *chip)
 	struct device_node *batt_node, *profile_node;
 	int rc;
 
-	pr_err("batt_id_ohm=%d\n", chip->batt_id_ohm);
+	pr_err("batt_id_ohm=%d\n",chip->batt_id_ohm);
 
 #ifdef CONFIG_PROJECT_PINE
 	if(chip->batt_id_ohm >= SUNWODA_ID_MIN && chip->batt_id_ohm <= SUNWODA_ID_MAX) {
@@ -2552,7 +2552,7 @@ static int qg_load_battery_profile(struct qpnp_qg *chip)
 		}
 		chip->batt_id = 0;
 	}
-	pr_err("batt_id=%d\n", chip->batt_id_ohm);
+	pr_err("batt_id=%d\n",chip->batt_id_ohm);
 
 	batt_node = of_find_node_by_name(node, "qcom,battery-data");
 	if (!batt_node) {
