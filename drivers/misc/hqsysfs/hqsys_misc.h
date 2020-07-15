@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 MediaTek Inc.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -54,8 +54,8 @@ enum misc_id{
 };
 
 struct emmc_info{
-	unsigned int cid[4] ;
-	const char *emmc_name;
+	unsigned int cid[4] ; //emmc cid
+	const char *emmc_name; //emmc name
 };
 
 
@@ -84,7 +84,7 @@ struct cam_info{
 
 
 
-#define __EMMC(cid_0, cid_1, cid_2, cid_3, _emmc_name) {				\
+#define __EMMC(cid_0,cid_1,cid_2,cid_3,_emmc_name) {				\
 		.cid[0] = cid_0,											\
 		.cid[1] = cid_1,											\
 		.cid[2] = cid_2,											\
@@ -93,12 +93,12 @@ struct cam_info{
 	}
 
 
-#define EMMC_INFO(cid_0, cid_1, cid_2, cid_3, _emmc_name) \
-	struct emmc_info emmc_info_##_emmc_name = __EMMC(cid_0, cid_1, cid_2, cid_3, _emmc_name)
+#define EMMC_INFO(cid_0,cid_1,cid_2,cid_3, _emmc_name) \
+	struct emmc_info emmc_info_##_emmc_name = __EMMC(cid_0,cid_1,cid_2,cid_3,_emmc_name)
 
 
 
-#define CAM_MAP_INFO(_drv, _vendor)  \
+#define CAM_MAP_INFO(_drv,_vendor)  \
     struct cam_info cam_info_##_drv = { \
         .cam_drv_name = __stringify(_drv),                           \
         .cam_vendro_name = __stringify(_vendor),                           \

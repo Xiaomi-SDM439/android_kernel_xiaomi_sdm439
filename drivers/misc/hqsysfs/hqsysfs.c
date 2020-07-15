@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 MediaTek Inc.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -25,7 +25,7 @@ static HW_INFO(HWID_SUMMARY, hw_summary);
 static HW_INFO(HWID_DDR, ram);
 static HW_INFO(HWID_EMMC, emmc);
 static HW_INFO(HWID_LCM, lcm);
-
+//static HW_INFO(HWID_BIAS_IC, lcm_bias_ic);
 static HW_INFO(HWID_CTP, ctp);
 static HW_INFO(HWID_MAIN_CAM, main_cam);
 static HW_INFO(HWID_MAIN_CAM_2, main_cam_2);
@@ -40,7 +40,7 @@ static HW_INFO(HWID_IRDA, irda);
 static HW_INFO(HWID_FUEL_GAUGE_IC, fuel_gauge_ic);
 static HW_INFO(HWID_NFC, nfc);
 static HW_INFO(HWID_FP, fingerprint);
-
+//static HW_INFO(HWID_TEE, tee);
 static HW_INFO(HWID_PCBA, pcba_config);
 static HW_INFO(HWID_PMIC, pmic_verison);
 
@@ -99,6 +99,10 @@ struct pcba_info pcba[] = {
 	{PCBA_OLIVELITE_MP_GLOBAL, "PCBA_OLIVELITE_MP_GLOBAL"},
 	{PCBA_OLIVELITE_MP_GLOBAL_B28, "PCBA_OLIVELITE_MP_GLOBAL_B28"},
 	{PCBA_OLIVELITE_MP_INDIA, "PCBA_OLIVELITE_MP_INDIA"},
+	{PCBA_OLIVEWOOD_P2_NIKALA, "PCBA_OLIVEWOOD_P2_NIKALA"},
+	{PCBA_OLIVEWOOD_P2_INDIA, "PCBA_OLIVEWOOD_P2_INDIA"},
+	{PCBA_OLIVEWOOD_MP_NIKALA, "PCBA_OLIVEWOOD_MP_NIKALA"},
+	{PCBA_OLIVEWOOD_MP_INDIA, "PCBA_OLIVEWOOD_MP_INDIA"},
 };
 static PCBA_CONFIG huaqin_pcba_config = PCBA_UNKNOW;
 
@@ -108,7 +112,7 @@ static struct attribute *huaqin_attrs[] = {
 	&hw_info_ram.attr,
 	&hw_info_emmc.attr,
 	&hw_info_lcm.attr,
-
+//	&hw_info_lcm_bias_ic.attr,
 	&hw_info_ctp.attr,
 	&hw_info_main_cam.attr,
 	&hw_info_main_cam_2.attr,
@@ -124,7 +128,7 @@ static struct attribute *huaqin_attrs[] = {
 	&hw_info_nfc.attr,
 	&hw_info_fingerprint.attr,
 	&hw_info_pcba_config.attr,
-
+//	&hw_info_tee.attr,
 	&hw_info_pmic_verison.attr,
 	NULL
 };
@@ -142,7 +146,7 @@ static ssize_t huaqin_show(struct kobject *kobj, struct attribute *a, char *buf)
 	if (HWID_VER == hw->hw_id) {
 		count = snprintf(buf, SNPRINTF_MAXLEN, "%s\n", HQ_SYS_FS_VER);
 	} else if (HWID_SUMMARY == hw->hw_id) {
-
+		//iterate all device and output the detail
 		int iterator = 0;
 		struct hw_info *curent_hw = NULL;
 		struct attribute *attr = huaqin_attrs[iterator];

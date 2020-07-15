@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 MediaTek Inc.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +15,10 @@
 #include "hqsys_misc.h"
 
 
-MISC_INFO(MISC_EMMC_SIZE, emmc_size);
-MISC_INFO(MISC_RAM_SIZE, ram_size);
-MISC_INFO(MISC_BOOT_MODE, boot_mode);
-MISC_INFO(MISC_OTP_SN, otp_sn);
+MISC_INFO(MISC_EMMC_SIZE,emmc_size);
+MISC_INFO(MISC_RAM_SIZE,ram_size);
+MISC_INFO(MISC_BOOT_MODE,boot_mode);
+MISC_INFO(MISC_OTP_SN,otp_sn);
 
 extern unsigned int msdc_get_capacity(int get_emmc_total);
 extern char *get_emmc_name(void);
@@ -27,31 +27,31 @@ unsigned int round_kbytes_to_readable_mbytes(unsigned int k){
 	unsigned int r_size_m = 0;
 	unsigned int in_mega = k/1024;
 
-	if (in_mega > 64*1024) {
+	if(in_mega > 64*1024){
 		r_size_m = 128*1024;
-	} else if (in_mega > 32*1024) {
+	}else if(in_mega > 32*1024){
 		r_size_m = 64*1024;
-	} else if (in_mega > 16*1024) {
+	}else if(in_mega > 16*1024){
 		r_size_m = 32*1024;
-	} else if (in_mega > 8*1024) {
+	}else if(in_mega > 8*1024){
 		r_size_m = 16*1024;
-	} else if (in_mega > 6*1024) {
+	}else if(in_mega > 6*1024){
 		r_size_m = 8*1024;
-	} else if (in_mega > 4*1024) {
+	}else if(in_mega > 4*1024){
 		r_size_m = 6*1024;
-	} else if (in_mega > 3*1024) {
+	}else if(in_mega > 3*1024){
 		r_size_m = 4*1024;
-	} else if (in_mega > 2*1024) {
+	}else if(in_mega > 2*1024){
 		r_size_m = 3*1024;
-	} else if (in_mega > 1024) {
+	}else if(in_mega > 1024){
 		r_size_m = 2*1024;
-	} else if (in_mega > 512) {
+	}else if(in_mega > 512){
 		r_size_m = 1024;
-	} else if (in_mega > 256) {
+	}else if(in_mega > 256){
 		r_size_m = 512;
-	} else if (in_mega > 128) {
+	}else if(in_mega > 128){
 		r_size_m = 256;
-	} else {
+	}else{
 		k = 0;
 	}
 	return r_size_m;
@@ -63,13 +63,13 @@ ssize_t hq_emmcinfo(char * buf)
 	struct file *pfile = NULL;
 	mm_segment_t old_fs;
 	loff_t pos;
-        ssize_t ret = 0;
+	ssize_t ret = 0;
 
-	unsigned long long Size_buf = 0;
+	unsigned long long Size_buf=0;
 	char buf_size[qcom_emmc_len];
-	memset(buf_size, 0, sizeof(buf_size));
+	memset(buf_size,0,sizeof(buf_size));
 
-	pfile = filp_open(qcom_emmc, O_RDONLY, 0);
+	pfile = filp_open(qcom_emmc,O_RDONLY,0);
 	if (IS_ERR(pfile)) {
 		goto ERR_0;
 	}
@@ -78,17 +78,18 @@ ssize_t hq_emmcinfo(char * buf)
 	set_fs(KERNEL_DS);
 	pos = 0;
 
-	ret = vfs_read(pfile, buf_size, qcom_emmc_len, &pos);
-	if(ret <= 0) {
+	ret=vfs_read(pfile, buf_size, qcom_emmc_len, &pos);
+	if(ret <=0 )
+	{
 		goto ERR_1;
 	}
 
-	Size_buf = simple_strtoull(buf_size, NULL, 0);
+	Size_buf=simple_strtoull(buf_size,NULL,0);
 
 	Size_buf>>=1;
 
 
-	count = sprintf(buf, "%dGB", round_kbytes_to_readable_mbytes((unsigned int)Size_buf)/1024);
+	count=sprintf(buf,"%dGB",round_kbytes_to_readable_mbytes((unsigned int)Size_buf)/1024);
 
 ERR_1:
 
@@ -112,7 +113,7 @@ static struct attribute *hq_misc_attrs[] = {
 };
 
 extern int hq_read_sn_from_otp(char *sn);
-extern int hq_write_sn_to_otp(char *sn, unsigned int len);
+extern int hq_write_sn_to_otp(char *sn,unsigned int len);
 #define SN_LEN (12)
 
 static ssize_t hq_misc_show(struct kobject *kobj, struct attribute *a, char *buf){
@@ -126,42 +127,39 @@ static ssize_t hq_misc_show(struct kobject *kobj, struct attribute *a, char *buf
 				#define K(x) ((x) << (PAGE_SHIFT - 10))
 				struct sysinfo i;
 				si_meminfo(&i);
-
-
-				if (round_kbytes_to_readable_mbytes(K(i.totalram)) >= 1024) {
-					count = sprintf(buf, "%dGB", round_kbytes_to_readable_mbytes(K(i.totalram))/1024);
-				} else {
-					count = sprintf(buf, "%dMB", round_kbytes_to_readable_mbytes(K(i.totalram)));
+				if(round_kbytes_to_readable_mbytes(K(i.totalram)) >= 1024){
+					count = sprintf(buf,"%dGB",round_kbytes_to_readable_mbytes(K(i.totalram))/1024);
+				}else{
+					count = sprintf(buf,"%dMB",round_kbytes_to_readable_mbytes(K(i.totalram)));
 				}
 
 			}
 			break;
 		case MISC_EMMC_SIZE:
-
-			count = hq_emmcinfo(buf);
+			count=hq_emmcinfo(buf);
 			break;
 		case MISC_OTP_SN:
 #ifdef CONFIG_MTK_EMMC_SUPPORT_OTP
 			{
 				char temp[SN_LEN+1] = {0};
 				int result = 0;
-				int i = 0;
+				int i=0;
 
 				result = hq_read_sn_from_otp(temp);
 
 				if(0 == result){
-					count = sprintf(buf, "%s", temp);
+					count = sprintf(buf,"%s",temp);
 				}else{
-					count = sprintf(buf, "Read SN in OTP error %d\n", result);
+					count = sprintf(buf,"Read SN in OTP error %d\n",result);
 				}
 			}
 
 #else
-			count = sprintf(buf, "SN in OTP not enabled\n");
+			count = sprintf(buf,"SN in OTP not enabled\n");
 #endif
-			break;
+		break;
 		default:
-			count = sprintf(buf, "Not support");
+			count = sprintf(buf,"Not support");
 			break;
 	}
 
@@ -181,22 +179,23 @@ static ssize_t hq_misc_store(struct kobject *kobj, struct attribute *a, const ch
 				int result = 0;
 				int i = 0;
 
-				if (0 != strncmp(buf, "SN:=", 4)) {
+				if(0 != strncmp(buf,"SN:=",4)){
 					printk("[%s] invalid write sn command\n");
 					break;
 				}
-				for (i = 0; i < SN_LEN; i++) {
+				for(i=0;i<SN_LEN;i++){
 					temp[i] = buf[i+4];
-					if (('\n' == buf[i+4]) || ('\r' == buf[i+4])) {
+					if(('\n' == buf[i+4]) || ('\r' == buf[i+4])){
 						temp[i] = 0;
 						break;
 					}
 				}
 
 
-				result = hq_write_sn_to_otp(temp, strlen(temp));
-					if (0 != result)
-						printk("[%s] called write error %d\n", __func__, result);
+				result = hq_write_sn_to_otp(temp,strlen(temp));
+					if(0 != result)
+						printk("[%s] called write error %d\n",__func__,result);
+
 			}
 			break;
 #endif
@@ -226,7 +225,7 @@ static int __init create_misc(void){
 	/* add kobject */
 	ret = register_kboj_under_hqsysfs(&hq_misc_kobj, &hq_misc_ktype, HUAQIN_MISC_NAME);
 	if (ret < 0) {
-		pr_err("%s fail to add hq_misc_kobj\n", __func__);
+		pr_err("%s fail to add hq_misc_kobj\n",__func__);
 		return ret;
 	}
 	return 0;
