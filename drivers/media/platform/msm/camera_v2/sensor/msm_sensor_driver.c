@@ -1,5 +1,5 @@
 /* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -747,8 +747,8 @@ static int32_t msm_sensor_driver_is_special_support(
 	return rc;
 }
 
-
-#ifdef OLIVE_MSM_CAMERA_HW_INFO
+// for olive caemra hw info
+#if defined OLIVE_MSM_CAMERA_HW_INFO || defined OLIVEWOOD_MSM_CAMERA_HW_INFO
 	uint32_t i = 0;
 	char olive_rear_camera_str_buff[6][2][20] = {
 		{"olive_imx486_ofilm", "sony_imx486_i"},
@@ -762,9 +762,10 @@ static int32_t msm_sensor_driver_is_special_support(
 		{"olive_ov8856_qtech", "omnivision_8856_ii"},
 		{"olive_ov8856_sunny", "omnivision_8856_i"},
 	};
-	char olive_rear_aux_camera_str_buff[2][2][20] = {
+	char olive_rear_aux_camera_str_buff[3][2][30] = {
 		{"olive_ov02a10_ofilm", "omnivision_02a10_i"},
 		{"olive_gc2375_sunny", "galaxycore_2375_ii"},
+		{"olivewood_gc02m1_sunny", "galaxycore_02m1_iii"},
 	};
 #endif
 
@@ -1223,8 +1224,8 @@ CSID_TG:
 	s_ctrl->sensordata->cam_slave_info = slave_info;
 
 	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
-
-#ifdef OLIVE_MSM_CAMERA_HW_INFO
+	// to get proper camera info Start
+#if defined OLIVE_MSM_CAMERA_HW_INFO || defined OLIVEWOOD_MSM_CAMERA_HW_INFO
 	if (0 == s_ctrl->id) {
 		for (i = 0; i < 6; i++)	{
 			if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
@@ -1244,7 +1245,7 @@ CSID_TG:
 			}
 		}
 	} else if (2 == s_ctrl->id) {
-		for (i = 0; i < 2; i++)	{
+		for (i = 0; i < 3; i++)	{
 			if (strncmp((char *)(s_ctrl->sensordata->sensor_name),
 				olive_rear_aux_camera_str_buff[i][0],
 				strlen(s_ctrl->sensordata->sensor_name)) == 0) {
@@ -1296,7 +1297,7 @@ CSID_TG:
 			strlen("pine_imx486_ofilm")) == 0) {
 			hq_regiser_hw_info(HWID_MAIN_CAM, "sony_imx486_ofilm_ii");
 		}
-
+		//hq_regiser_hw_info(HWID_MAIN_CAM, (char *)(s_ctrl->sensordata->eeprom_name));
 	} else if (1 == s_ctrl->id) {
 		if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
 			"pine_gc5035_qtech",
@@ -1311,10 +1312,10 @@ CSID_TG:
 			strlen("pine_gc5035_holitech")) == 0) {
 			hq_regiser_hw_info(HWID_SUB_CAM, "galaxycore_5035_iii");
 		}
-
+		//hq_regiser_hw_info(HWID_SUB_CAM, (char *)(s_ctrl->sensordata->eeprom_name));
 	}
 #endif
-
+	// to get proper camera info End
 
 	/*
 	 * Set probe succeeded flag to 1 so that no other camera shall

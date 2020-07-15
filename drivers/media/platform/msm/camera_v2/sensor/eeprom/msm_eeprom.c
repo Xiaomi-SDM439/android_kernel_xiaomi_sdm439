@@ -1,5 +1,5 @@
 /* Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -177,7 +177,7 @@ static int read_eeprom_info_for_gc5035(struct msm_eeprom_ctrl_t *e_ctrl,
 		/*page31 info&WB 30 */
 		{0x1, 0x67, 1, 0xc0, 1, 0},
 		{0x1, 0xf3, 1, 0x00, 1, 0},
-
+		// page 31
 		{0x1, 0xe0, 1, 0x1f, 1, 0},
 		{0x1, 0x67, 1, 0xf0, 1, 0},
 		{0x1, 0xf3, 1, 0x10, 1, 1},
@@ -190,12 +190,12 @@ static int read_eeprom_info_for_gc5035(struct msm_eeprom_ctrl_t *e_ctrl,
 
 	eb_info = e_ctrl->eboard_info;
 
-
+	// if not gc5035, exit
 	if (eb_info->i2c_slaveaddr != 0x6e) {
 		return 0;
 	}
 
-
+	// write some config to gc5035
 	for (j = 0; j < 25; j++) {
 		if (write_buf[j].valid_size) {
 			e_ctrl->i2c_client.addr_type = 1;
@@ -210,8 +210,8 @@ static int read_eeprom_info_for_gc5035(struct msm_eeprom_ctrl_t *e_ctrl,
 		}
 	}
 
-
-
+	// read module info
+	//qcom,mem39  = <0x1E 0xC2 1 0x0 1 0>;
 	e_ctrl->i2c_client.addr_type = 1;
 	rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_read_seq(
 		&(e_ctrl->i2c_client), 0xC2,
@@ -221,10 +221,10 @@ static int read_eeprom_info_for_gc5035(struct msm_eeprom_ctrl_t *e_ctrl,
 		return rc;
 	}
 
-
-
-
-
+	//gc5035 module ID value for compatibility of pine
+	//#define QTECH_GC5035_MID 0x06
+	//#define OFILM_GC5035_MID 0x07
+	//#define HOLITECH_GC5035_MID 0x08
 	if (info_data[3] == 0x06)
 		rc = strncmp(eb_info->eeprom_name, "pine_gc5035_qtech", strlen("pine_gc5035_qtech"));
 	else if (info_data[3] == 0x07)
@@ -234,11 +234,11 @@ static int read_eeprom_info_for_gc5035(struct msm_eeprom_ctrl_t *e_ctrl,
 
 	CDBG("lph info_data[3] %d, eeprom_name %s", info_data[3], eb_info->eeprom_name);
 
-
+	// strncmp return value maybe greater than 0
 	if (rc > 0)
 		rc = 0 - rc;
-
-
+	// if actual modele used matches the current eeprom node,
+	// return 0 and continue execution
 	return rc;
 }
 
