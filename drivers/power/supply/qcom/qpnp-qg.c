@@ -1932,7 +1932,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			pr_info("%s:Terminated charging @ msoc=%d\n",
 					__func__, chip->msoc);
 		}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE)
+#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)
 #else
 	} else if ((!chip->charge_done || chip->msoc <= recharge_soc)

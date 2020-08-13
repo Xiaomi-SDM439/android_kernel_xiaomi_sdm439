@@ -1,5 +1,5 @@
 /* Copyright (c) 2018 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -462,7 +462,7 @@ struct smb_charger {
 	bool			is_adapter_idn;
 #endif
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE)
+#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
 	unsigned long recent_collapse_time;
 	bool		  hvdcp_disabled;
 	bool		  collapsed;

@@ -1,5 +1,5 @@
 /* Copyright (c) 2018 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -300,7 +300,7 @@ enum {
  *  TYPEC Peripheral Registers  *
  ********************************/
 #define TYPE_C_SNK_STATUS_REG			(TYPEC_BASE + 0x06)
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE)
+#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
 #define DETECTED_SRC_TYPE_MASK			GENMASK(6, 0)
 #define SNK_RP_STD_DAM_BIT 		BIT(6)
 #define SNK_RP_1P5_DAM_BIT 		BIT(5)
